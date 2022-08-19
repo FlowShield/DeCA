@@ -1,0 +1,79 @@
+# 运行模式(debug:调试,test:测试,release:正式)
+RunMode = "debug"
+
+# 启动时是否打印配置参数
+PrintConfig = true
+
+[App]
+# 监听地址
+Host = "0.0.0.0"
+# 监听端口
+Port = 8081
+# 证书路径 -- 此证书两个作用：1、App服务证书；2、作为父级证书，用于签发证书
+CertFile = "./configs/cert/cert.pem"
+# 证书密钥 -- 此证书两个作用：1、App服务证书；2、作为父级证书，用于签发证书
+KeyFile = "./configs/cert/key.pem"
+# http优雅关闭等待超时时长(单位秒)
+ShutdownTimeout = 30
+# 允许的最大内容长度(64M)
+MaxContentLength = 67108864
+# 允许输出的最大请求日志长度
+MaxReqLoggerLength = 1024
+
+# CrdtKv 分布式存储
+[CrdtKv]
+# Service Discovery Identification
+NodeServiceName = "icefiredb-crdt-kv"
+# Data storage path
+DataStorePath = "./data/crdtkvdb"
+# Pubsub data synchronization channel
+DataSyncChannel = "icefiredb-crdt-kv-data"
+# Node discovery channel
+NetDiscoveryChannel = "icefiredb-crdt-kv-net"
+# Namespace
+Namespace = "test"
+
+# Cfssl 配置信息
+[Cfssl]
+# 配置文件
+ConfigFile = "./configs/cfssl_config.json"
+
+# 存储配置
+[Storage]
+# 存储类型(目前支持的存储类型：ipfs)
+Type = "ipfs"
+
+[Ipfs]
+# 连接地址
+Host = "127.0.0.1"
+# 连接端口
+Port = 5001
+
+[Log]
+# 日志级别(1:fatal 2:error,3:warn,4:info,5:debug,6:trace)
+Level = 4
+# 日志格式（支持输出格式：text/json）
+Format = "text"
+# 日志输出(支持：stdout/stderr/file)
+Output = "stdout"
+# 指定日志输出的文件路径
+OutputFile = "data/app.log"
+# 是否启用日志钩子
+EnableHook = false
+# 写入钩子的日志级别
+HookLevels = ["info", "warn", "error"]
+# 日志钩子(支持：redis)
+Hook = "redis"
+# 写入钩子的最大工作线程数量
+HookMaxThread = 1
+# 写入钩子的最大缓冲区数量
+HookMaxBuffer = 512
+# 日志轮询数量
+RotationCount = 20
+# 日志轮询时间周期
+RotationTime = 24
+
+[LogRedisHook]
+Addr = "127.0.0.1:6379"
+Key = ""
+
