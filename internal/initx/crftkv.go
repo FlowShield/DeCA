@@ -3,6 +3,7 @@ package initx
 import (
 	"context"
 	"github.com/IceFireDB/icefiredb-crdt-kv/kv"
+	"github.com/IceFireDB/icefiredb-crdt-kv/pkg/p2p"
 	"github.com/cloudslit/newca/internal/config"
 	"github.com/cloudslit/newca/pkg/logger"
 )
@@ -13,6 +14,7 @@ func InitCrdtKv(ctx context.Context) (*kv.CRDTKeyValueDB, func(), error) {
 	db, err := kv.NewCRDTKeyValueDB(ctx, kv.Config{
 		NodeServiceName:     cfg.NodeServiceName,
 		DataStorePath:       cfg.DataStorePath,
+		PubSubHandleType:    p2p.PubSubHandleTypeFlood,
 		DataSyncChannel:     cfg.DataSyncChannel,
 		NetDiscoveryChannel: cfg.NetDiscoveryChannel,
 		Namespace:           cfg.Namespace,

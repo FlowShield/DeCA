@@ -1,4 +1,4 @@
-package app
+package internal
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/cloudslit/newca/internal/config"
 	"github.com/cloudslit/newca/internal/initx"
+	"github.com/cloudslit/newca/pkg/errors"
 	"github.com/cloudslit/newca/pkg/logger"
 	"net/http"
 	"os"
@@ -14,7 +15,11 @@ import (
 	"time"
 )
 
+const AppTlsType = "tls"
+const AppOcspType = "ocsp"
+
 type options struct {
+	App        string
 	ConfigFile string
 	Version    string
 }
@@ -30,6 +35,12 @@ func SetConfigFile(s string) Option {
 func SetVersion(s string) Option {
 	return func(o *options) {
 		o.Version = s
+	}
+}
+
+func SetAppType(s string) Option {
+	return func(o *options) {
+		o.App = s
 	}
 }
 
@@ -53,18 +64,27 @@ func Init(ctx context.Context, opts ...Option) (func(), error) {
 	if err != nil {
 		return nil, err
 	}
-
-	httpServerCleanFunc := InitHTTPServer(ctx, injector.Engine)
-
+	tlsServerCleanFunc := func() {}
+	ocspServerCleanFunc := func() {}
+	switch o.App {
+	case AppTlsType:
+		tlsServerCleanFunc = InitTLSServer(ctx, injector.Engine)
+	case AppOcspType:
+		ocspServerCleanFunc = InitOCSPServer(ctx, injector.OcspEngine)
+	default:
+		return nil, errors.New("Unknown app type")
+	}
 	return func() {
-		httpServerCleanFunc()
+		ocspServerCleanFunc()
+		tlsServerCleanFunc()
 		injectorCleanFunc()
 		loggerCleanFunc()
 	}, nil
 }
 
-func InitHTTPServer(ctx context.Context, handler http.Handler) func() {
-	cfg := config.C.App
+// TLS 服务
+func InitTLSServer(ctx context.Context, handler http.Handler) func() {
+	cfg := config.C.TLS
 	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 	srv := &http.Server{
 		Addr:         addr,
@@ -88,6 +108,37 @@ func InitHTTPServer(ctx context.Context, handler http.Handler) func() {
 			panic(err)
 		}
 
+	}()
+
+	return func() {
+		ctx, cancel := context.WithTimeout(ctx, time.Second*time.Duration(cfg.ShutdownTimeout))
+		defer cancel()
+
+		srv.SetKeepAlivesEnabled(false)
+		if err := srv.Shutdown(ctx); err != nil {
+			logger.WithContext(ctx).Errorf(err.Error())
+		}
+	}
+}
+
+// OCSP 服务
+func InitOCSPServer(ctx context.Context, handler http.Handler) func() {
+	cfg := config.C.OCSP
+	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
+	srv := &http.Server{
+		Addr:         addr,
+		Handler:      handler,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		IdleTimeout:  30 * time.Second,
+	}
+
+	go func() {
+		logger.WithContext(ctx).Printf("OCSP server is running at %s.", addr)
+		err := srv.ListenAndServe()
+		if err != nil && err != http.ErrServerClosed {
+			panic(err)
+		}
 	}()
 
 	return func() {

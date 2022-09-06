@@ -7,7 +7,6 @@ import (
 	"github.com/cloudslit/newca/pkg/errors"
 	"github.com/cloudslit/newca/pkg/storage"
 	"github.com/cloudslit/newca/pkg/util/json"
-
 	"github.com/google/wire"
 )
 
@@ -19,12 +18,18 @@ type CertificateRepo struct {
 }
 
 func (a *CertificateRepo) GetS(ctx context.Context, id string) (*schema.Certificate, error) {
-	str, err := a.DB.Get(id)
+	errCount := 0
+retry:
+	str, err := a.DB.Get(ctx, id)
 	if err != nil {
+		if errCount < 3 {
+			errCount++
+			goto retry
+		}
 		return nil, err
 	}
 	var result Certificate
-	err = json.Unmarshal([]byte(str), &result)
+	err = json.Unmarshal(str, &result)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -32,19 +37,29 @@ func (a *CertificateRepo) GetS(ctx context.Context, id string) (*schema.Certific
 }
 
 func (a *CertificateRepo) PutS(ctx context.Context, item schema.Certificate) (*schema.IDResult, error) {
-	id, err := a.DB.Put(item.String())
+	itemByte, err := json.Marshal(item)
 	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	errCount := 0
+retry:
+	id, err := a.DB.Put(ctx, itemByte)
+	if err != nil {
+		if errCount < 3 {
+			errCount++
+			goto retry
+		}
 		return nil, errors.WithStack(err)
 	}
 	return schema.NewIDResult(id), nil
 }
 
-func (a *CertificateRepo) GetC(ctx context.Context, key string) (*schema.IDResult, error) {
-	cid, err := a.Crdt.Get(ctx, []byte(key))
+func (a *CertificateRepo) GetC(ctx context.Context, key string) ([]byte, error) {
+	result, err := a.Crdt.Get(ctx, []byte(key))
 	if err != nil {
 		return nil, err
 	}
-	return schema.NewIDResult(string(cid)), err
+	return result, err
 }
 
 func (a *CertificateRepo) PutC(ctx context.Context, key string, value string) error {

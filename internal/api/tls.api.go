@@ -4,6 +4,7 @@ import (
 	"github.com/cloudslit/cfssl/api"
 	"github.com/cloudslit/cfssl/auth"
 	"github.com/cloudslit/newca/internal/ginx"
+	"github.com/cloudslit/newca/internal/schema"
 	"github.com/cloudslit/newca/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
@@ -36,4 +37,20 @@ func (a *TlsAPI) AuthSign(c *gin.Context) {
 		ginx.ResError(c, err)
 		return
 	}
+}
+
+// 利用cfssl内部handle
+func (a *TlsAPI) Revoke(c *gin.Context) {
+	ctx := c.Request.Context()
+	var params schema.RevokeParams
+	if err := ginx.ParseJSON(c, &params); err != nil {
+		ginx.ResError(c, err)
+		return
+	}
+	err := a.TlsSrv.Revoke(ctx, params)
+	if err != nil {
+		ginx.ResError(c, err)
+		return
+	}
+	api.SendResponse(c.Writer, map[string]string{})
 }

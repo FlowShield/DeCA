@@ -1,7 +1,7 @@
 .PHONY: all build clean
 
 PROG=bin/ca
-SRCS=.
+SRCS=cmd/main.go
 
 # git commit hash
 COMMIT_HASH=$(shell git rev-parse --short HEAD || echo "GitNotFound")
@@ -21,3 +21,4 @@ wire:
 
 clean:
 	rm -rf ./bin
+	rm -rf ./data

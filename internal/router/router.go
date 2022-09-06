@@ -18,6 +18,7 @@ type IRouter interface {
 
 type Router struct {
 	TlsAPI         *api.TlsAPI
+	OcspAPI        *api.OcspAPI
 	CertificateAPI *api.CertificateAPI
 } // end
 
@@ -42,6 +43,7 @@ func (a *Router) RegisterAPI(app *gin.Engine) {
 		{
 			gCfssl.POST("info", a.TlsAPI.Info)
 			gCfssl.POST("authsign", a.TlsAPI.AuthSign)
+			gCfssl.POST("revoke", a.TlsAPI.Revoke)
 		}
 
 		gCert := v1.Group("certificate")

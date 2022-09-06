@@ -3,7 +3,7 @@
 
 // The build tag makes sure the stub is not built in the final build.
 
-package app
+package internal
 
 import (
 	"context"
@@ -18,13 +18,14 @@ import (
 
 func BuildInjector(ctx context.Context) (*Injector, func(), error) {
 	wire.Build(
-		initx.InitSigner,
-		initx.InitInfoHandle,
+		initx.InitCfssl,
 		initx.InitStorage,
 		initx.InitCrdtKv,
+		initx.InitOcspCache,
 		dao.RepoSet,
 		service.ServiceSet,
 		InitGinEngine,
+		InitOcspEngine,
 		api.APISet,
 		router.RouterSet,
 		InjectorSet,

@@ -4,7 +4,8 @@ RunMode = "debug"
 # 启动时是否打印配置参数
 PrintConfig = true
 
-[App]
+# TLS 证书服务
+[TLS]
 # 监听地址
 Host = "0.0.0.0"
 # 监听端口
@@ -20,12 +21,25 @@ MaxContentLength = 67108864
 # 允许输出的最大请求日志长度
 MaxReqLoggerLength = 1024
 
+# OCSP 服务
+[OCSP]
+# 监听地址
+Host = "0.0.0.0"
+# 监听端口
+Port = 8082
+# http优雅关闭等待超时时长(单位秒)
+ShutdownTimeout = 30
+# 允许的最大内容长度(64M)
+MaxContentLength = 67108864
+# 允许输出的最大请求日志长度
+MaxReqLoggerLength = 1024
+
 # CrdtKv 分布式存储
 [CrdtKv]
 # Service Discovery Identification
 NodeServiceName = "icefiredb-crdt-kv"
 # Data storage path
-DataStorePath = "./data/crdtkvdb"
+DataStorePath = "data/crdtkvdb"
 # Pubsub data synchronization channel
 DataSyncChannel = "icefiredb-crdt-kv-data"
 # Node discovery channel
@@ -35,19 +49,28 @@ Namespace = "test"
 
 # Cfssl 配置信息
 [Cfssl]
+OCSPHost = "http://127.0.0.1:8082"
 # 配置文件
 ConfigFile = "./configs/cfssl_config.json"
 
 # 存储配置
 [Storage]
-# 存储类型(目前支持的存储类型：ipfs)
+# 存储类型(目前支持的存储类型：ipfs/web3.storage)
 Type = "ipfs"
 
+# ipfs 存储
 [Ipfs]
 # 连接地址
 Host = "127.0.0.1"
 # 连接端口
 Port = 5001
+
+# Web3Storage 存储
+[Web3Storage]
+# Api Token
+Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDU4MUJkZEVGNTA3MDlmZjIzQzEwN0Q5YUU2NEVlMjc5M0IyMzk3NWMiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NTY2NDc2MDM2MjUsIm5hbWUiOiJjbG91ZHNsaXQifQ.7iUZuCDn1SNn7CxuR_kdAWf9_PfpuJlqPmy7ZdB2x9U"
+# data Encrypt key
+EncryptKey = "12345678"
 
 [Log]
 # 日志级别(1:fatal 2:error,3:warn,4:info,5:debug,6:trace)
@@ -75,5 +98,5 @@ RotationTime = 24
 
 [LogRedisHook]
 Addr = "127.0.0.1:6379"
-Key = ""
+Key = "log_key"
 

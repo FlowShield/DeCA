@@ -49,22 +49,33 @@ func MustLoad(fpaths ...string) error {
 }
 
 func ParseConfigByEnv() error {
-	// APP
-	if v := os.Getenv("CA_APP_HOST"); v != "" {
-		C.App.Host = v
+	// TLS
+	if v := os.Getenv("CA_TLS_HOST"); v != "" {
+		C.TLS.Host = v
 	}
-	if v := os.Getenv("CA_APP_PORT"); v != "" {
+	if v := os.Getenv("CA_TLS_PORT"); v != "" {
 		p, err := strconv.Atoi(v)
 		if err != nil {
-			return fmt.Errorf("environment variable [%s] parsing error:%v", "CA_APP_PORT", err)
+			return fmt.Errorf("environment variable [%s] parsing error:%v", "CA_TLS_PORT", err)
 		}
-		C.App.Port = p
+		C.TLS.Port = p
 	}
-	if v := os.Getenv("CA_APP_CERT_FILE"); v != "" {
-		C.App.CertFile = v
+	if v := os.Getenv("CA_TLS_CERT_FILE"); v != "" {
+		C.TLS.CertFile = v
 	}
-	if v := os.Getenv("CA_APP_KEY_FILE"); v != "" {
-		C.App.KeyFile = v
+	if v := os.Getenv("CA_TLS_KEY_FILE"); v != "" {
+		C.TLS.KeyFile = v
+	}
+	// OCSP
+	if v := os.Getenv("CA_OCSP_HOST"); v != "" {
+		C.OCSP.Host = v
+	}
+	if v := os.Getenv("CA_OCSP_PORT"); v != "" {
+		p, err := strconv.Atoi(v)
+		if err != nil {
+			return fmt.Errorf("environment variable [%s] parsing error:%v", "CA_OCSP_PORT", err)
+		}
+		C.OCSP.Port = p
 	}
 	// Log
 	if v := os.Getenv("CA_LOG_HOOK_ENABLED"); v == "true" {
@@ -92,11 +103,29 @@ func ParseConfigByEnv() error {
 		C.Ipfs.Port = p
 	}
 
+	// CRDT
+	if v := os.Getenv("CA_CRDT_KV_NODE_SERVICE_NAME"); v != "" {
+		C.CrdtKv.NodeServiceName = v
+	}
+	if v := os.Getenv("CA_CRDT_KV_DATA_STORE_PATH"); v != "" {
+		C.CrdtKv.DataStorePath = v
+	}
+	if v := os.Getenv("CA_CRDT_KV_DATA_SYNC_CHANNEL"); v != "" {
+		C.CrdtKv.DataSyncChannel = v
+	}
+	if v := os.Getenv("CA_CRDT_KV_NET_DISCOVERY_CHANNEL"); v != "" {
+		C.CrdtKv.NetDiscoveryChannel = v
+	}
+	if v := os.Getenv("CA_CRDT_KV_NAMESPACE"); v != "" {
+		C.CrdtKv.Namespace = v
+	}
+
 	// Cfssl
 	cfg, err := cfssl_config.LoadFile(C.Cfssl.ConfigFile)
 	if err != nil {
 		return err
 	}
+	cfg.Signing.Default.OCSP = C.Cfssl.OCSPHost
 	C.Cfssl.Config = cfg
 	return nil
 }
@@ -115,12 +144,14 @@ func PrintWithJSON() {
 type Config struct {
 	RunMode      string
 	PrintConfig  bool
-	App          App
+	TLS          TLS
+	OCSP         OCSP
 	Log          Log
 	LogRedisHook LogRedisHook
 	Cfssl        Cfssl
 	Storage      Storage
 	Ipfs         Ipfs
+	Web3Storage  Web3Storage
 	CrdtKv       CrdtKv
 }
 
@@ -168,8 +199,8 @@ type Redis struct {
 	Password string
 }
 
-// App Configuration parameters
-type App struct {
+// TLS Configuration parameters
+type TLS struct {
 	Host               string
 	Port               int
 	CertFile           string
@@ -182,8 +213,19 @@ type App struct {
 	MaxResLoggerLength int
 }
 
+// OCSP Configuration parameters
+type OCSP struct {
+	Host               string
+	Port               int
+	ShutdownTimeout    int
+	MaxContentLength   int64
+	MaxReqLoggerLength int `default:"1024"`
+	MaxResLoggerLength int
+}
+
 type Cfssl struct {
 	ConfigFile string
+	OCSPHost   string
 	Config     *cfssl_config.Config
 }
 
@@ -195,9 +237,18 @@ func (h Storage) IsIpfs() bool {
 	return h.Type == "ipfs"
 }
 
+func (h Storage) IsWeb3Storage() bool {
+	return h.Type == "web3.storage"
+}
+
 type Ipfs struct {
 	Host string
 	Port int
+}
+
+type Web3Storage struct {
+	Token      string
+	EncryptKey string
 }
 
 type CrdtKv struct {

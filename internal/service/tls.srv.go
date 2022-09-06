@@ -1,13 +1,16 @@
 package service
 
+import "C"
 import (
 	"context"
 	"encoding/hex"
 	"github.com/cloudslit/cfssl/auth"
-	"github.com/cloudslit/cfssl/config"
+	cfssl_config "github.com/cloudslit/cfssl/config"
 	"github.com/cloudslit/cfssl/helpers"
 	"github.com/cloudslit/cfssl/signer"
+	"github.com/cloudslit/newca/internal/config"
 	"github.com/cloudslit/newca/internal/dao"
+	"github.com/cloudslit/newca/internal/initx"
 	"github.com/cloudslit/newca/internal/schema"
 	"github.com/cloudslit/newca/pkg/attrmgr"
 	"github.com/cloudslit/newca/pkg/errors"
@@ -15,7 +18,6 @@ import (
 	"github.com/cloudslit/newca/pkg/util/json"
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
-	"net/http"
 	"time"
 )
 
@@ -23,12 +25,36 @@ var TlsSet = wire.NewSet(wire.Struct(new(TlsSrv), "*"))
 
 type TlsSrv struct {
 	CertificateRepo *dao.CertificateRepo
-	Signer          signer.Signer
-	InfoHandle      http.Handler
+	CfsslHandler    *initx.CfsslHandler
 }
 
 func (a *TlsSrv) Info(c *gin.Context) {
-	a.InfoHandle.ServeHTTP(c.Writer, c.Request)
+	a.CfsslHandler.InfoHandler.ServeHTTP(c.Writer, c.Request)
+}
+
+func (a *TlsSrv) Revoke(ctx context.Context, params schema.RevokeParams) error {
+	// 数据库查询
+	_, err := a.CertificateRepo.GetC(ctx, schema.SnCidKey(params.Serial))
+	if err != nil {
+		return err
+	}
+	if params.Profile == "" {
+		return errors.New("profile 未指定")
+	}
+	if authKey, ok := config.C.Cfssl.Config.AuthKeys[params.Profile]; ok {
+		if authKey.Key != params.AuthKey {
+			return errors.New("非法操作")
+		}
+	}
+	data := schema.CertificateRevoke{
+		SerialNumber: params.Serial,
+		RevokeAt:     time.Now(),
+	}
+	err = a.CertificateRepo.PutC(ctx, schema.SnRevokeKey(params.Serial), data.String())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (a *TlsSrv) AuthSign(ctx context.Context, params auth.AuthenticatedRequest) (*schema.TlsShowResult, error) {
@@ -39,12 +65,12 @@ func (a *TlsSrv) AuthSign(ctx context.Context, params auth.AuthenticatedRequest)
 	}
 	// Sanity checks to ensure that we have a valid policy. This
 	// should have been checked in NewAuthHandler.
-	policy := a.Signer.Policy()
+	policy := a.CfsslHandler.LocalSigner.Policy()
 	if policy == nil {
 		return nil, errors.New("invalid policy")
 	}
 
-	profile, err := signer.Profile(a.Signer, lsr.Profile)
+	profile, err := signer.Profile(a.CfsslHandler.LocalSigner, lsr.Profile)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -67,18 +93,11 @@ func (a *TlsSrv) AuthSign(ctx context.Context, params auth.AuthenticatedRequest)
 	if signReq.Request == "" {
 		return nil, errors.New("missing parameter 'certificate_rest'")
 	}
-	if v, ok := signReq.Metadata["unique_id"]; ok {
-		if v == "" {
-			return nil, errors.New("Metadata unique_id required")
-		}
-	} else {
-		return nil, errors.New("Metadata unique_id required")
-	}
 	err = a.genExpiryByCsr(&signReq, profile)
 	if err != nil {
 		return nil, err
 	}
-	cert, err := a.Signer.Sign(signReq)
+	cert, err := a.CfsslHandler.LocalSigner.Sign(signReq)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -101,8 +120,9 @@ func (a *TlsSrv) saveCertificate(ctx context.Context, certPem []byte, metaData m
 	if err != nil {
 		return nil, err
 	}
+	sn := cert.SerialNumber.String()
 	certificate := schema.Certificate{
-		SerialNumber:           cert.SerialNumber.String(),
+		SerialNumber:           sn,
 		AuthorityKeyIdentifier: hex.EncodeToString(cert.AuthorityKeyId),
 		CertPem:                string(certPem),
 		NotBefore:              cert.NotBefore,
@@ -113,7 +133,7 @@ func (a *TlsSrv) saveCertificate(ctx context.Context, certPem []byte, metaData m
 	if err != nil {
 		return nil, err
 	}
-	err = a.CertificateRepo.PutC(ctx, metaData["unique_id"].(string), idResult.ID)
+	err = a.CertificateRepo.PutC(ctx, schema.SnCidKey(sn), idResult.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +141,7 @@ func (a *TlsSrv) saveCertificate(ctx context.Context, certPem []byte, metaData m
 }
 
 // 添加过期时间
-func (a *TlsSrv) genExpiryByCsr(sr *signer.SignRequest, profile *config.SigningProfile) error {
+func (a *TlsSrv) genExpiryByCsr(sr *signer.SignRequest, profile *cfssl_config.SigningProfile) error {
 	csr, err := helpers.ParseCSRPEM([]byte(sr.Request))
 	if err != nil {
 		return errors.WithStack(err)

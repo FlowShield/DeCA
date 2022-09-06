@@ -6,5 +6,6 @@ import (
 
 var ServiceSet = wire.NewSet(
 	TlsSet,
+	OcspSet,
 	CertificateSet,
 ) // end

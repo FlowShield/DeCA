@@ -24,12 +24,12 @@ func (a *CertificateSrv) GetS(ctx context.Context, id string) (*schema.Certifica
 	return item, nil
 }
 
-func (a *CertificateSrv) GetC(ctx context.Context, key string) (*schema.IDResult, error) {
-	item, err := a.CertificateRepo.GetC(ctx, key)
+func (a *CertificateSrv) GetC(ctx context.Context, key string) (interface{}, error) {
+	item, err := a.CertificateRepo.GetC(ctx, schema.SnCidKey(key))
 	if err != nil {
 		return nil, err
 	} else if item == nil {
 		return nil, errors.ErrNotFound
 	}
-	return item, nil
+	return string(item), nil
 }

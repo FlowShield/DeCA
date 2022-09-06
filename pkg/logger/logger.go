@@ -17,8 +17,6 @@ const (
 	StackKey   = "stack"
 )
 
-var version string
-
 type Logger = logrus.Logger
 
 type Entry = logrus.Entry
@@ -44,10 +42,6 @@ func SetFormatter(format string) {
 
 func SetOutput(out io.Writer) {
 	logrus.SetOutput(out)
-}
-
-func SetVersion(v string) {
-	version = v
 }
 
 func AddHook(hook Hook) {
@@ -128,9 +122,7 @@ func WithContext(ctx context.Context) *Entry {
 	if ctx == nil {
 		ctx = context.Background()
 	}
-	fields := map[string]interface{}{
-		VersionKey: version,
-	}
+	fields := map[string]interface{}{}
 	if v := FromStackContext(ctx); v != nil {
 		fields[StackKey] = fmt.Sprintf("%+v", v)
 	}

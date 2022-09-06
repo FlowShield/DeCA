@@ -39,3 +39,14 @@ func (a *LocalSignRequest) ToSignerSignRequest() signer.SignRequest {
 	}
 	return result
 }
+
+// RevokeParams
+type RevokeParams struct {
+	Serial  string `json:"serial" binding:"required"`
+	AKI     string `json:"authority_key_id"`
+	Reason  string `json:"reason"`
+	Nonce   string `json:"nonce"`
+	Sign    string `json:"sign"`
+	AuthKey string `json:"auth_key" binding:"required"`
+	Profile string `json:"profile"`
+}

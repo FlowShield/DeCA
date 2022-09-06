@@ -4,7 +4,7 @@
 //go:build !wireinject
 // +build !wireinject
 
-package app
+package internal
 
 import (
 	"context"
@@ -31,13 +31,7 @@ func BuildInjector(ctx context.Context) (*Injector, func(), error) {
 		DB:   execCloser,
 		Crdt: crdtKeyValueDB,
 	}
-	signer, err := initx.InitSigner()
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	handler, err := initx.InitInfoHandle(signer)
+	cfsslHandler, err := initx.InitCfssl()
 	if err != nil {
 		cleanup2()
 		cleanup()
@@ -45,11 +39,20 @@ func BuildInjector(ctx context.Context) (*Injector, func(), error) {
 	}
 	tlsSrv := &service.TlsSrv{
 		CertificateRepo: certificateRepo,
-		Signer:          signer,
-		InfoHandle:      handler,
+		CfsslHandler:    cfsslHandler,
 	}
 	tlsAPI := &api.TlsAPI{
 		TlsSrv: tlsSrv,
+	}
+	cache := initx.InitOcspCache()
+	ocspSrv := &service.OcspSrv{
+		CertificateRepo: certificateRepo,
+		CfsslHandler:    cfsslHandler,
+		Cache:           cache,
+		Ctx:             ctx,
+	}
+	ocspAPI := &api.OcspAPI{
+		OcspSrv: ocspSrv,
 	}
 	certificateSrv := &service.CertificateSrv{
 		CertificateRepo: certificateRepo,
@@ -59,11 +62,14 @@ func BuildInjector(ctx context.Context) (*Injector, func(), error) {
 	}
 	routerRouter := &router.Router{
 		TlsAPI:         tlsAPI,
+		OcspAPI:        ocspAPI,
 		CertificateAPI: certificateAPI,
 	}
 	engine := InitGinEngine(routerRouter)
+	serveMux := InitOcspEngine(ocspAPI)
 	injector := &Injector{
-		Engine: engine,
+		Engine:     engine,
+		OcspEngine: serveMux,
 	}
 	return injector, func() {
 		cleanup2()
