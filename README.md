@@ -3,112 +3,38 @@
     width="40%" border="0" alt="CA">
 </p>
 
-# CA
+# DECA
+DECA 是一个兼容 X.509 的去中心化的 PKI 框架。
+DECA 可执行 X.509 PKI 标准的所有关键功能，即注册、确认、撤销和验证 TLS 证书。
+DECA 兼容现有的 PKI 标准，即 X.509。它存储、颁发和验证 X.509 格式的证书内容，而不是创建其自定义实现。
 
-CA is a PKI developed based on cloudflare cfssl,Public key infrastructure (PKI) governs the issuance of digital certificates to protect sensitive data, provide unique digital identities for users, devices and applications and secure end-to-end communications.
+# 背景
+PKI 的安全性很大程度上依赖于这些第三方 CA 的可靠性，这对 PKI 来说是一个单点故障。
+过去曾发生过多起流行的 CA 违规事件，其中 CA 的中心化运营模式因流氓证书的传播而引发了
+大量的针对性攻击。
 
-CA includes the following components：
+我们的目标是使 CA 池完全去中心化，并同时构建我们的去中心化解决方案与已建立的 
+PKI 标准（即 X.509）合作，以实现有效的现实世界集成。
 
-1. TLS service, as the CA center, is used for certificate issuance, revocation, signature and other operations.
-2. API services, as some API services for certificate management.
-2. OCSP service is a service that queries the online status of certificates and has been signed by OCSP.
-2. SDK component, which is used for other services to access the CA SDK as a toolkit for certificate issuance and automatic rotation.
+# 架构
+DECA利用IPFS CRDT技术提出了一个名为 DECA 的去中心化 PKI 框架，
+该框架在去中心化的 CA 组之间提供数据同步，隐匿同步策略，基础数据低延迟同步。
+证书信息利用IPFS的特性存储在IPFS中，不可篡改，有效防止第三方攻击。
+![image](https://user-images.githubusercontent.com/52234994/192089294-d5891f90-16ac-497d-9efe-a09eb38b0ced.png)
 
-## How the Certificate Creation Process Works
-
-The certificate creation process relies heavily on asymmetric encryption and works as follows: 
-
-- A private key is created and the corresponding public key gets computed 
-- The CA requests any identifying attributes of the private key owner and vets that information 
-- The public key and identifying attributes get encoded into a Certificate Signing Request (CSR) 
-- The CSR is signed by the key owner to prove possession of that private key 
-- The issuing CA validates the request and signs the certificate with the CA’s own private key 
-
-<img src="https://user-images.githubusercontent.com/52234994/165200483-0b7e9698-552c-4a9f-b9b0-afce84e8c313.png" alt="image-20220425164057905" style="width:50%;" />
-
-Anyone can use the public portion of a certificate to verify that it was actually issued by the CA by confirming who owns the private key used to sign the certificate. And, assuming they deem that CA trustworthy, they can verify that anything they send to the certificate holder will actually go to the intended recipient and that anything signed using that certificate holder’s private key was indeed signed by that person/device. 
-
-One important part of this process to note is that the CA itself has its own private key and corresponding public key, which creates the need for CA hierarchies. 
-
-## How CA Hierarchies and Root CAs Create Layers of Trust
-
-Since each CA has a certificate of its own, layers of trust get created through CA hierarchies — in which CAs issue certificates for other CAs. However, this process is not circular, as there is ultimately a root certificate. Normally, certificates have an issuer and a subject as two separate parties, but these are the same parties for root CAs, meaning that root certificates are self-signed. As a result, people must inherently trust the root certificate authority to trust any certificates that trace back to it. 
-
-<img src="https://user-images.githubusercontent.com/52234994/165200520-842ecf88-bfea-441b-a1af-53260ce4085f.png" alt="image-20220425164028072" style="width:50%;" />
-
-## CA overall architecture and working mode
-
-![image-20220425165623191](https://user-images.githubusercontent.com/52234994/165200574-ac647d20-1044-4580-8378-862d4fd4af9e.png)
-
-## Building
-
-Building cfssl requires a [working Go 1.12+ installation](http://golang.org/doc/install).
-
+# Get Start
 ```
-$ git clone git@github.com:ztalab/CA.git
-$ cd CA
+$ go get github.com/cloudslit/deca
 $ make
+$ bin/ca tls -c configs/config.toml
 ```
-
-You can set GOOS and GOARCH environment variables to allow Go to cross-compile alternative platforms.
-
-The resulting binaries will be in the bin folder:
-
-```
-$ tree bin
-bin
-├── CA
-```
-
-## Configuration reference
-
-When CA starts each service, it needs to rely on some configurations, and the dependent configuration information has two configuration methods:
-
-**configuration file:**
-
-The configuration file is in the project root directory：`conf.yml` ,The file format is standard yaml format, which can be used as a reference。
-
-**environment variable:**
-
-In the project root directory：`.env.example`, The file describes how to configure some settings through environment variables.
-
-**Priority:**
-
-The configuration priority of environment variables is higher than the configuration in the configuration file.
-
-
-## Service Installation
-
-### TLS service
-
-TLS service is used to issue certificates through control`IS_KEYMANAGER_SELF_SIGN` Environment variable to control whether to start as Root CA.
-
-- Started as root CA, TLS service will self sign certificate.
-- When starting as an intermediate CA, the TLS service needs to request the root CA signing certificate as its own CA certificate.
-
-Start command：`CA tls`，Default listening port 8081
-
-### OCSP service
-
-OCSP online certificate status is used to query the certificate status information. OCSP returns the certificate online status information to quickly check whether the certificate has expired, whether it has been revoked and so on.
-
-Start command：`CA ocsp`，Default listening port 8082
-
-### API service
-
-Provide CA center API service, which can be accessed after the service is started`http://localhost:8080/swagger/index.html`，View API documentation.
-
-Start command：`CA api`，Default listening port 8080
-
-
 
 ### SDK Installation
-
 ```
 $ go get github.com/cloudslit/newcasdk
 ```
 
-The classic usage of the CA SDK is that the client and the server use the certificate issued by the CA center for encrypted communication. The following is the usage of the sdk between the client and the server.
+CA SDK的经典用法是客户端和服务器使用CA中心颁发的证书进行加密通信。以下是客户端和服务器之间sdk的用法。
 
 See：[Demo](https://github.com/cloudslit/newcasdk/tree/master/caclient/examples)
 
