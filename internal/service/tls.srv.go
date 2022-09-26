@@ -1,6 +1,5 @@
 package service
 
-import "C"
 import (
 	"context"
 	"encoding/hex"

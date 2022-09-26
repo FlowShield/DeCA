@@ -31,10 +31,10 @@ $ bin/ca tls -c configs/config.toml
 
 ### SDK Installation
 ```
-$ go get github.com/cloudslit/newcasdk
+$ go get github.com/cloudslit/deca
 ```
 
 CA SDK的经典用法是客户端和服务器使用CA中心颁发的证书进行加密通信。以下是客户端和服务器之间sdk的用法。
 
-See：[Demo](https://github.com/cloudslit/newcasdk/tree/master/caclient/examples)
+See：[Demo](https://github.com/CloudSlit/casdk/tree/main/examples)
 
