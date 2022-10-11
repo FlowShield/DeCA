@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 
-	"github.com/cloudslit/newca/internal/api"
+	"github.com/cloudslit/deca/internal/api"
 )
 
 var _ IRouter = (*Router)(nil)

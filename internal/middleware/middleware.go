@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cloudslit/newca/internal/ginx"
-	"github.com/cloudslit/newca/pkg/errors"
+	"github.com/cloudslit/deca/internal/ginx"
+	"github.com/cloudslit/deca/pkg/errors"
 	"github.com/gin-gonic/gin"
 )
 

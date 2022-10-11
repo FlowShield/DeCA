@@ -9,10 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 
-	"github.com/cloudslit/newca/internal/schema"
-	"github.com/cloudslit/newca/pkg/errors"
-	"github.com/cloudslit/newca/pkg/logger"
-	"github.com/cloudslit/newca/pkg/util/json"
+	"github.com/cloudslit/deca/internal/schema"
+	"github.com/cloudslit/deca/pkg/errors"
+	"github.com/cloudslit/deca/pkg/logger"
+	"github.com/cloudslit/deca/pkg/util/json"
 )
 
 const (

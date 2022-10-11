@@ -2,15 +2,16 @@ package config
 
 import (
 	"fmt"
-	cfssl_config "github.com/cloudslit/cfssl/config"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
 
+	cfssl_config "github.com/cloudslit/cfssl/config"
+
 	"github.com/koding/multiconfig"
 
-	"github.com/cloudslit/newca/pkg/util/json"
+	"github.com/cloudslit/deca/pkg/util/json"
 )
 
 var (

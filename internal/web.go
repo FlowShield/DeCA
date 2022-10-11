@@ -1,14 +1,15 @@
 package internal
 
 import (
-	"github.com/cloudslit/cfssl/ocsp"
-	"github.com/cloudslit/newca/internal/api"
-	"github.com/cloudslit/newca/internal/middleware"
-	"github.com/gin-gonic/gin"
 	"net/http"
 
-	"github.com/cloudslit/newca/internal/config"
-	"github.com/cloudslit/newca/internal/router"
+	"github.com/cloudslit/cfssl/ocsp"
+	"github.com/cloudslit/deca/internal/api"
+	"github.com/cloudslit/deca/internal/middleware"
+	"github.com/gin-gonic/gin"
+
+	"github.com/cloudslit/deca/internal/config"
+	"github.com/cloudslit/deca/internal/router"
 )
 
 func InitGinEngine(r router.IRouter) *gin.Engine {

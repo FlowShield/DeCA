@@ -1,4 +1,4 @@
-module github.com/cloudslit/newca
+module github.com/cloudslit/deca
 
 go 1.17
 

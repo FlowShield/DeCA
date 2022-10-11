@@ -3,15 +3,16 @@ package initx
 import (
 	"crypto"
 	"crypto/x509"
+	"io/ioutil"
+	"net/http"
+	"time"
+
 	"github.com/cloudslit/cfssl/api/info"
 	"github.com/cloudslit/cfssl/helpers"
 	"github.com/cloudslit/cfssl/ocsp"
 	"github.com/cloudslit/cfssl/signer"
 	"github.com/cloudslit/cfssl/signer/local"
-	"github.com/cloudslit/newca/internal/config"
-	"io/ioutil"
-	"net/http"
-	"time"
+	"github.com/cloudslit/deca/internal/config"
 )
 
 // InitCert 初始化证书

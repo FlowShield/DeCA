@@ -1,9 +1,10 @@
 package certificate
 
 import (
-	"github.com/cloudslit/newca/internal/schema"
-	"github.com/cloudslit/newca/pkg/util/structure"
 	"time"
+
+	"github.com/cloudslit/deca/internal/schema"
+	"github.com/cloudslit/deca/pkg/util/structure"
 )
 
 type SchemaCertificate schema.Certificate

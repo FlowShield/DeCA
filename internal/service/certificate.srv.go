@@ -2,9 +2,10 @@ package service
 
 import (
 	"context"
-	"github.com/cloudslit/newca/internal/dao"
-	"github.com/cloudslit/newca/internal/schema"
-	"github.com/cloudslit/newca/pkg/errors"
+
+	"github.com/cloudslit/deca/internal/dao"
+	"github.com/cloudslit/deca/internal/schema"
+	"github.com/cloudslit/deca/pkg/errors"
 	"github.com/google/wire"
 )
 

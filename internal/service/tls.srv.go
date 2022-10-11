@@ -3,21 +3,22 @@ package service
 import (
 	"context"
 	"encoding/hex"
+	"time"
+
 	"github.com/cloudslit/cfssl/auth"
 	cfssl_config "github.com/cloudslit/cfssl/config"
 	"github.com/cloudslit/cfssl/helpers"
 	"github.com/cloudslit/cfssl/signer"
-	"github.com/cloudslit/newca/internal/config"
-	"github.com/cloudslit/newca/internal/dao"
-	"github.com/cloudslit/newca/internal/initx"
-	"github.com/cloudslit/newca/internal/schema"
-	"github.com/cloudslit/newca/pkg/attrmgr"
-	"github.com/cloudslit/newca/pkg/errors"
-	"github.com/cloudslit/newca/pkg/logger"
-	"github.com/cloudslit/newca/pkg/util/json"
+	"github.com/cloudslit/deca/internal/config"
+	"github.com/cloudslit/deca/internal/dao"
+	"github.com/cloudslit/deca/internal/initx"
+	"github.com/cloudslit/deca/internal/schema"
+	"github.com/cloudslit/deca/pkg/attrmgr"
+	"github.com/cloudslit/deca/pkg/errors"
+	"github.com/cloudslit/deca/pkg/logger"
+	"github.com/cloudslit/deca/pkg/util/json"
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
-	"time"
 )
 
 var TlsSet = wire.NewSet(wire.Struct(new(TlsSrv), "*"))

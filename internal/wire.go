@@ -7,13 +7,13 @@ package internal
 
 import (
 	"context"
-	"github.com/cloudslit/newca/internal/service"
+	"github.com/cloudslit/deca/internal/service"
 	"github.com/google/wire"
 
-	"github.com/cloudslit/newca/internal/api"
-	"github.com/cloudslit/newca/internal/dao"
-	"github.com/cloudslit/newca/internal/initx"
-	"github.com/cloudslit/newca/internal/router"
+	"github.com/cloudslit/deca/internal/api"
+	"github.com/cloudslit/deca/internal/dao"
+	"github.com/cloudslit/deca/internal/initx"
+	"github.com/cloudslit/deca/internal/router"
 )
 
 func BuildInjector(ctx context.Context) (*Injector, func(), error) {

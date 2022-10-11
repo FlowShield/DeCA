@@ -3,19 +3,21 @@ package service
 import (
 	"context"
 	"encoding/hex"
+
 	"github.com/cloudslit/cfssl/helpers"
 	"github.com/cloudslit/cfssl/ocsp"
-	"github.com/cloudslit/newca/internal/dao"
-	"github.com/cloudslit/newca/internal/initx"
-	"github.com/cloudslit/newca/internal/schema"
-	"github.com/cloudslit/newca/pkg/errors"
-	"github.com/cloudslit/newca/pkg/logger"
-	"github.com/cloudslit/newca/pkg/memorycacher"
-	"github.com/cloudslit/newca/pkg/util/json"
+	"github.com/cloudslit/deca/internal/dao"
+	"github.com/cloudslit/deca/internal/initx"
+	"github.com/cloudslit/deca/internal/schema"
+	"github.com/cloudslit/deca/pkg/errors"
+	"github.com/cloudslit/deca/pkg/logger"
+	"github.com/cloudslit/deca/pkg/memorycacher"
+	"github.com/cloudslit/deca/pkg/util/json"
+
+	"net/http"
 
 	"github.com/google/wire"
 	stdocsp "golang.org/x/crypto/ocsp"
-	"net/http"
 )
 
 var OcspSet = wire.NewSet(wire.Struct(new(OcspSrv), "*"))

@@ -2,10 +2,11 @@ package web3_storage
 
 import (
 	"context"
-	"github.com/cloudslit/newca/internal/config"
 	"io/fs"
 	"io/ioutil"
 	"os"
+
+	"github.com/cloudslit/deca/internal/config"
 
 	"github.com/ipfs/go-cid"
 	"github.com/web3-storage/go-w3s-client"

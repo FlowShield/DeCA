@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"github.com/cloudslit/newca/internal"
-	"github.com/cloudslit/newca/pkg/logger"
-	"github.com/urfave/cli/v2"
 	"os"
+
+	"github.com/cloudslit/deca/internal"
+	"github.com/cloudslit/deca/pkg/logger"
+	"github.com/urfave/cli/v2"
 )
 
 var VERSION = "0.0.1"

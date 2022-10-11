@@ -2,10 +2,11 @@ package initx
 
 import (
 	"context"
+
 	"github.com/IceFireDB/icefiredb-crdt-kv/kv"
 	"github.com/IceFireDB/icefiredb-crdt-kv/pkg/p2p"
-	"github.com/cloudslit/newca/internal/config"
-	"github.com/cloudslit/newca/pkg/logger"
+	"github.com/cloudslit/deca/internal/config"
+	"github.com/cloudslit/deca/pkg/logger"
 )
 
 func InitCrdtKv(ctx context.Context) (*kv.CRDTKeyValueDB, func(), error) {

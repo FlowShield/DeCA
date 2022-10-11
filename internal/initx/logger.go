@@ -1,14 +1,15 @@
 package initx
 
 import (
-	"github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
 
-	"github.com/cloudslit/newca/internal/config"
-	"github.com/cloudslit/newca/pkg/logger"
-	loggerhook "github.com/cloudslit/newca/pkg/logger/hook"
-	loggerredishook "github.com/cloudslit/newca/pkg/logger/hook/redis"
+	"github.com/sirupsen/logrus"
+
+	"github.com/cloudslit/deca/internal/config"
+	"github.com/cloudslit/deca/pkg/logger"
+	loggerhook "github.com/cloudslit/deca/pkg/logger/hook"
+	loggerredishook "github.com/cloudslit/deca/pkg/logger/hook/redis"
 )
 
 // InitLogger initialize the log module

@@ -8,11 +8,11 @@ package internal
 
 import (
 	"context"
-	"github.com/cloudslit/newca/internal/api"
-	"github.com/cloudslit/newca/internal/dao/certificate"
-	"github.com/cloudslit/newca/internal/initx"
-	"github.com/cloudslit/newca/internal/router"
-	"github.com/cloudslit/newca/internal/service"
+	"github.com/cloudslit/deca/internal/api"
+	"github.com/cloudslit/deca/internal/dao/certificate"
+	"github.com/cloudslit/deca/internal/initx"
+	"github.com/cloudslit/deca/internal/router"
+	"github.com/cloudslit/deca/internal/service"
 )
 
 // Injectors from wire.go:

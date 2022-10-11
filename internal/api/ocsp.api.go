@@ -1,10 +1,11 @@
 package api
 
 import (
-	"github.com/cloudslit/newca/internal/service"
+	"net/http"
+
+	"github.com/cloudslit/deca/internal/service"
 	"github.com/google/wire"
 	stdocsp "golang.org/x/crypto/ocsp"
-	"net/http"
 )
 
 var OcspSet = wire.NewSet(wire.Struct(new(OcspAPI), "*"))

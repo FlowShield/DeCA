@@ -1,8 +1,9 @@
 package schema
 
 import (
-	"github.com/cloudslit/newca/pkg/util/json"
 	"time"
+
+	"github.com/cloudslit/deca/pkg/util/json"
 )
 
 const (

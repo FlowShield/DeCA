@@ -3,9 +3,9 @@ package api
 import (
 	"github.com/cloudslit/cfssl/api"
 	"github.com/cloudslit/cfssl/auth"
-	"github.com/cloudslit/newca/internal/ginx"
-	"github.com/cloudslit/newca/internal/schema"
-	"github.com/cloudslit/newca/internal/service"
+	"github.com/cloudslit/deca/internal/ginx"
+	"github.com/cloudslit/deca/internal/schema"
+	"github.com/cloudslit/deca/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 )

@@ -4,15 +4,16 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"github.com/cloudslit/newca/internal/config"
-	"github.com/cloudslit/newca/internal/initx"
-	"github.com/cloudslit/newca/pkg/errors"
-	"github.com/cloudslit/newca/pkg/logger"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/cloudslit/deca/internal/config"
+	"github.com/cloudslit/deca/internal/initx"
+	"github.com/cloudslit/deca/pkg/errors"
+	"github.com/cloudslit/deca/pkg/logger"
 )
 
 const AppTlsType = "tls"

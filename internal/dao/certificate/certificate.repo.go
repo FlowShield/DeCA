@@ -2,11 +2,12 @@ package certificate
 
 import (
 	"context"
+
 	"github.com/IceFireDB/icefiredb-crdt-kv/kv"
-	"github.com/cloudslit/newca/internal/schema"
-	"github.com/cloudslit/newca/pkg/errors"
-	"github.com/cloudslit/newca/pkg/storage"
-	"github.com/cloudslit/newca/pkg/util/json"
+	"github.com/cloudslit/deca/internal/schema"
+	"github.com/cloudslit/deca/pkg/errors"
+	"github.com/cloudslit/deca/pkg/storage"
+	"github.com/cloudslit/deca/pkg/util/json"
 	"github.com/google/wire"
 )
 

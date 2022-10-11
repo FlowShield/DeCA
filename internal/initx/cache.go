@@ -1,9 +1,10 @@
 package initx
 
 import (
-	"github.com/cloudslit/newca/pkg/memorycacher"
 	"math"
 	"time"
+
+	"github.com/cloudslit/deca/pkg/memorycacher"
 )
 
 func InitOcspCache() *memorycacher.Cache {

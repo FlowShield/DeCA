@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/cloudslit/newca/internal/config"
-	"github.com/cloudslit/newca/pkg/errors"
-	shell "github.com/ipfs/go-ipfs-api"
 	"io/ioutil"
+
+	"github.com/cloudslit/deca/internal/config"
+	"github.com/cloudslit/deca/pkg/errors"
+	shell "github.com/ipfs/go-ipfs-api"
 )
 
 type Ipfs struct {
