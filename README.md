@@ -18,9 +18,10 @@ Our goal is to completely decentralize the CA pool, and at the same time build o
 PKI standard (i.e. X.509) to achieve effective real-world integration.
 
 # System architecture
-DeCA proposed a decentralized PKI framework named DeCA by using IPFS and FVM technology,
-This framework provides data synchronization, hidden synchronization strategy and low-latency synchronization of basic data among decentralized CA groups.
+DeCA proposed a decentralized PKI framework named DeCA by using IPFS and FVM technology,This framework provides data synchronization, hidden synchronization strategy and low-latency synchronization of basic data among decentralized CA groups.
+
 The certificate is stored in decentralize storage by using the characteristics of IPFS and FVM, and cannot be tampered with, thus effectively preventing the third party from attacking.
+
 ![image](https://user-images.githubusercontent.com/52234994/192089294-d5891f90-16ac-497d-9efe-a09eb38b0ced.png)
 
 # Get Start
