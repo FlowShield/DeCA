@@ -24,14 +24,14 @@ DeCA利用IPFS CRDT技术提出了一个名为 DeCA 的去中心化 PKI 框架�
 
 # Get Start
 ```
-$ go get github.com/cloudslit/DeCA
+$ go get github.com/cloudslit/deca
 $ make
 $ bin/ca tls -c configs/config.toml
 ```
 
 ### SDK Installation
 ```
-$ go get github.com/cloudslit/DeCA
+$ go get github.com/cloudslit/deca
 ```
 
 CA SDK的经典用法是客户端和服务器使用CA中心颁发的证书进行加密通信。以下是客户端和服务器之间sdk的用法。
