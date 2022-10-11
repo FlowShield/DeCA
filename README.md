@@ -8,7 +8,7 @@ DeCA is a decentralized PKI framework compatible with X.509
 DeCA can perform all the key functions of X.509 PKI standard, namely, registering, confirming, revoking and verifying TLS certificates.
 DeCA is compatible with the existing PKI standard, namely X.509 It stores, issues and verifies the certificate content in X.509 format instead of creating its custom implementation.
 
-# 背景
+# Background
 The security of PKI largely depends on the reliability of these third-party CAs, which is a single point of failure for PKI.
 There have been many popular CA violations in the past, among which the centralized operation mode of CA was triggered by the spread of rogue certificates.
 A large number of targeted attacks.
@@ -16,7 +16,7 @@ A large number of targeted attacks.
 Our goal is to completely decentralize the CA pool, and at the same time build our decentralized solution and the established
 PKI standard (i.e. X.509) to achieve effective real-world integration.
 
-# 架构
+# System architecture
 DeCA proposed a decentralized PKI framework named DeCA by using IPFS and FVM technology,
 This framework provides data synchronization, hidden synchronization strategy and low-latency synchronization of basic data among decentralized CA groups.
 The certificate is stored in IPFS by using the characteristics of IPFS, and cannot be tampered with, thus effectively preventing the third party from attacking.
