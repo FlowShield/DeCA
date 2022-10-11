@@ -3,38 +3,38 @@
     width="40%" border="0" alt="CA">
 </p>
 
-# DECA
-DECA 是一个兼容 X.509 的去中心化的 PKI 框架。
-DECA 可执行 X.509 PKI 标准的所有关键功能，即注册、确认、撤销和验证 TLS 证书。
-DECA 兼容现有的 PKI 标准，即 X.509。它存储、颁发和验证 X.509 格式的证书内容，而不是创建其自定义实现。
+# DeCA
+DeCA is a decentralized PKI framework compatible with X.509
+DeCA can perform all the key functions of X.509 PKI standard, namely, registering, confirming, revoking and verifying TLS certificates.
+DeCA is compatible with the existing PKI standard, namely X.509 It stores, issues and verifies the certificate content in X.509 format instead of creating its custom implementation.
 
 # 背景
-PKI 的安全性很大程度上依赖于这些第三方 CA 的可靠性，这对 PKI 来说是一个单点故障。
-过去曾发生过多起流行的 CA 违规事件，其中 CA 的中心化运营模式因流氓证书的传播而引发了
-大量的针对性攻击。
+The security of PKI largely depends on the reliability of these third-party CAs, which is a single point of failure for PKI.
+There have been many popular CA violations in the past, among which the centralized operation mode of CA was triggered by the spread of rogue certificates.
+A large number of targeted attacks.
 
-我们的目标是使 CA 池完全去中心化，并同时构建我们的去中心化解决方案与已建立的 
-PKI 标准（即 X.509）合作，以实现有效的现实世界集成。
+Our goal is to completely decentralize the CA pool, and at the same time build our decentralized solution and the established
+PKI standard (i.e. X.509) to achieve effective real-world integration.
 
 # 架构
-DECA利用IPFS CRDT技术提出了一个名为 DECA 的去中心化 PKI 框架，
-该框架在去中心化的 CA 组之间提供数据同步，隐匿同步策略，基础数据低延迟同步。
-证书信息利用IPFS的特性存储在IPFS中，不可篡改，有效防止第三方攻击。
+DeCA proposed a decentralized PKI framework named DeCA by using IPFS and FVM technology,
+This framework provides data synchronization, hidden synchronization strategy and low-latency synchronization of basic data among decentralized CA groups.
+The certificate is stored in IPFS by using the characteristics of IPFS, and cannot be tampered with, thus effectively preventing the third party from attacking.
 ![image](https://user-images.githubusercontent.com/52234994/192089294-d5891f90-16ac-497d-9efe-a09eb38b0ced.png)
 
 # Get Start
 ```
-$ go get github.com/cloudslit/deca
+$ go get github.com/cloudslit/DeCA
 $ make
 $ bin/ca tls -c configs/config.toml
 ```
 
 ### SDK Installation
 ```
-$ go get github.com/cloudslit/deca
+$ go get github.com/cloudslit/DeCA
 ```
 
-CA SDK的经典用法是客户端和服务器使用CA中心颁发的证书进行加密通信。以下是客户端和服务器之间sdk的用法。
+The classic usage of CA SDK is that the client and the server use the certificate issued by CA Center for encrypted communication. The following is the usage of sdk between client and server.
 
 See：[Demo](https://github.com/CloudSlit/casdk/tree/main/examples)
 
