@@ -26,17 +26,17 @@ The certificate is stored in decentralize storage by using the characteristics o
 
 # Get Start
 ```
-$ go get github.com/cloudslit/deca
+$ go get github.com/FlowShield/deca
 $ make
 $ bin/ca tls -c configs/config.toml
 ```
 
 ### SDK Installation
 ```
-$ go get github.com/cloudslit/deca
+$ go get github.com/FlowShield/deca
 ```
 
 The classic usage of CA SDK is that the client and the server use the certificate issued by CA Center for encrypted communication. The following is the usage of sdk between client and server.
 
-See：[Demo](https://github.com/CloudSlit/casdk/tree/main/examples)
+See：[Demo](https://github.com/FlowShield/casdk/tree/main/examples)
 
