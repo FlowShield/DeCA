@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/cloudslit/deca/internal/config"
-	"github.com/cloudslit/deca/pkg/errors"
+	"github.com/flowshield/deca/internal/config"
+	"github.com/flowshield/deca/pkg/errors"
 	shell "github.com/ipfs/go-ipfs-api"
 )
 

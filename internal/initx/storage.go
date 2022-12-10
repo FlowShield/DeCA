@@ -1,11 +1,11 @@
 package initx
 
 import (
-	"github.com/cloudslit/deca/internal/config"
-	"github.com/cloudslit/deca/pkg/errors"
-	"github.com/cloudslit/deca/pkg/storage"
-	"github.com/cloudslit/deca/pkg/storage/ipfs"
-	web3_storage "github.com/cloudslit/deca/pkg/storage/web3-storage"
+	"github.com/flowshield/deca/internal/config"
+	"github.com/flowshield/deca/pkg/errors"
+	"github.com/flowshield/deca/pkg/storage"
+	"github.com/flowshield/deca/pkg/storage/ipfs"
+	web3_storage "github.com/flowshield/deca/pkg/storage/web3-storage"
 )
 
 // InitStorage 初始化存储引擎

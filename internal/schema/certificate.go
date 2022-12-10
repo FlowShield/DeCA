@@ -1,14 +1,10 @@
 package schema
 
 import (
+	"github.com/flowshield/deca/pkg/util"
 	"time"
 
-	"github.com/cloudslit/deca/pkg/util/json"
-)
-
-const (
-	CrdtSnRevokePrefix = "certificate_sn_revoke_"
-	CrdtSnCidPrefix    = "certificate_sn_cid_"
+	"github.com/flowshield/deca/pkg/util/json"
 )
 
 type Certificate struct {
@@ -24,7 +20,11 @@ func (a *Certificate) String() string {
 	return json.MarshalToString(a)
 }
 
-// CertificateStatus 证书状态信息
+func (a *Certificate) Hash() string {
+	return util.Md5(json.MarshalToString(a))
+}
+
+// CertificateRevoke 证书状态信息
 type CertificateRevoke struct {
 	SerialNumber string    `json:"serial_number"`
 	RevokeAt     time.Time `json:"revoke_at"`
@@ -32,14 +32,4 @@ type CertificateRevoke struct {
 
 func (a *CertificateRevoke) String() string {
 	return json.MarshalToString(a)
-}
-
-// 吊销证书记录存储key
-func SnRevokeKey(key string) string {
-	return CrdtSnRevokePrefix + key
-}
-
-// 证书cid存储key
-func SnCidKey(key string) string {
-	return CrdtSnCidPrefix + key
 }

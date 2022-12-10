@@ -7,20 +7,21 @@ package internal
 
 import (
 	"context"
-	"github.com/cloudslit/deca/internal/service"
+	"github.com/flowshield/deca/internal/service"
 	"github.com/google/wire"
 
-	"github.com/cloudslit/deca/internal/api"
-	"github.com/cloudslit/deca/internal/dao"
-	"github.com/cloudslit/deca/internal/initx"
-	"github.com/cloudslit/deca/internal/router"
+	"github.com/flowshield/deca/internal/api"
+	"github.com/flowshield/deca/internal/dao"
+	"github.com/flowshield/deca/internal/initx"
+	"github.com/flowshield/deca/internal/router"
 )
 
 func BuildInjector(ctx context.Context) (*Injector, func(), error) {
 	wire.Build(
 		initx.InitCfssl,
 		initx.InitStorage,
-		initx.InitCrdtKv,
+		initx.InitEthClient,
+		//initx.InitCrdtKv,
 		initx.InitOcspCache,
 		dao.RepoSet,
 		service.ServiceSet,

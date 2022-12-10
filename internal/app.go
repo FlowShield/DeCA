@@ -10,10 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/cloudslit/deca/internal/config"
-	"github.com/cloudslit/deca/internal/initx"
-	"github.com/cloudslit/deca/pkg/errors"
-	"github.com/cloudslit/deca/pkg/logger"
+	"github.com/flowshield/deca/internal/config"
+	"github.com/flowshield/deca/internal/initx"
+	"github.com/flowshield/deca/pkg/errors"
+	"github.com/flowshield/deca/pkg/logger"
 )
 
 const AppTlsType = "tls"
@@ -61,7 +61,17 @@ func Init(ctx context.Context, opts ...Option) (func(), error) {
 		return nil, err
 	}
 
+	err = initx.InitRootCert()
+	if err != nil {
+		return nil, err
+	}
+
 	injector, injectorCleanFunc, err := BuildInjector(ctx)
+	if err != nil {
+		return nil, err
+	}
+	// 根证书上链
+	err = injector.Router.CertificateAPI.CertificateSrv.CreateRootCa(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +93,7 @@ func Init(ctx context.Context, opts ...Option) (func(), error) {
 	}, nil
 }
 
-// TLS 服务
+// InitTLSServer TLS 服务
 func InitTLSServer(ctx context.Context, handler http.Handler) func() {
 	cfg := config.C.TLS
 	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
@@ -122,7 +132,7 @@ func InitTLSServer(ctx context.Context, handler http.Handler) func() {
 	}
 }
 
-// OCSP 服务
+// InitOCSPServer OCSP 服务
 func InitOCSPServer(ctx context.Context, handler http.Handler) func() {
 	cfg := config.C.OCSP
 	addr := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)

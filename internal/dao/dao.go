@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/cloudslit/deca/internal/dao/certificate"
+	"github.com/flowshield/deca/internal/dao/certificate"
 
 	"github.com/google/wire"
 ) // end

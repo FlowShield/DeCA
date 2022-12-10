@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"github.com/cloudslit/cfssl/signer"
+	"github.com/flowshield/cfssl/signer"
 	"math/big"
 )
 

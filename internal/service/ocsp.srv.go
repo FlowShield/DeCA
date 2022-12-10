@@ -4,16 +4,11 @@ import (
 	"context"
 	"encoding/hex"
 
-	"github.com/cloudslit/cfssl/helpers"
-	"github.com/cloudslit/cfssl/ocsp"
-	"github.com/cloudslit/deca/internal/dao"
-	"github.com/cloudslit/deca/internal/initx"
-	"github.com/cloudslit/deca/internal/schema"
-	"github.com/cloudslit/deca/pkg/errors"
-	"github.com/cloudslit/deca/pkg/logger"
-	"github.com/cloudslit/deca/pkg/memorycacher"
-	"github.com/cloudslit/deca/pkg/util/json"
-
+	"github.com/flowshield/deca/internal/dao"
+	"github.com/flowshield/deca/internal/initx"
+	"github.com/flowshield/deca/pkg/errors"
+	"github.com/flowshield/deca/pkg/logger"
+	"github.com/flowshield/deca/pkg/memorycacher"
 	"net/http"
 
 	"github.com/google/wire"
@@ -48,42 +43,43 @@ func (a *OcspSrv) Query(req *stdocsp.Request) ([]byte, http.Header, error) {
 		logger.Errorf("cache值解析错误, sn:%s, aki:%s", strSN, aki)
 	}
 
-	// 数据库查询
-	crdtId, err := a.CertificateRepo.GetC(a.Ctx, schema.SnCidKey(strSN))
-	if err != nil {
-		return nil, nil, err
-	}
-	certS, err := a.CertificateRepo.GetS(a.Ctx, string(crdtId))
-	if err != nil {
-		return nil, nil, err
-	}
+	// TODO:数据库查询
+	//crdtId, err := a.CertificateRepo.GetC(a.Ctx, schema.SnCidKey(strSN))
+	//if err != nil {
+	//	return nil, nil, err
+	//}
+	//certS, err := a.CertificateRepo.GetS(a.Ctx, string(crdtId))
+	//if err != nil {
+	//	return nil, nil, err
+	//}
+	//
+	//cert, err := helpers.ParseCertificatePEM([]byte(certS.CertPem))
+	//if err != nil {
+	//	logger.WithErrorStack(a.Ctx, err).Errorf("证书PEM解析错误:%s, sn:%s, aki:%s", err.Error(), strSN, aki)
+	//	return nil, nil, err
+	//}
+	//signReq := &ocsp.SignRequest{
+	//	Certificate: cert,
+	//	Status:      "good",
+	//	Reason:      0,
+	//}
+	//TODO: 查询是否吊销
+	//revoke, _ := a.CertificateRepo.GetC(a.Ctx, schema.SnRevokeKey(strSN))
+	//if revoke != nil {
+	//	var re schema.CertificateRevoke
+	//	_ = json.Unmarshal(revoke, &re)
+	//	signReq.Status = "revoked"
+	//	signReq.Reason = 1
+	//	signReq.RevokedAt = re.RevokeAt
+	//}
+	//ocspResp, err := a.CfsslHandler.OcspSigner.Sign(*signReq)
+	//if err != nil {
+	//	logger.WithErrorStack(a.Ctx, err).Errorf("OCSP签名错误:%s, sn:%s, aki:%s", err.Error(), strSN, aki)
+	//	return nil, nil, err
+	//}
+	//a.Cache.SetDefault(strSN+aki, ocspResp)
 
-	cert, err := helpers.ParseCertificatePEM([]byte(certS.CertPem))
-	if err != nil {
-		logger.WithErrorStack(a.Ctx, err).Errorf("证书PEM解析错误:%s, sn:%s, aki:%s", err.Error(), strSN, aki)
-		return nil, nil, err
-	}
-	signReq := &ocsp.SignRequest{
-		Certificate: cert,
-		Status:      "good",
-		Reason:      0,
-	}
-	// 查询是否吊销
-	revoke, _ := a.CertificateRepo.GetC(a.Ctx, schema.SnRevokeKey(strSN))
-	if revoke != nil {
-		var re schema.CertificateRevoke
-		_ = json.Unmarshal(revoke, &re)
-		signReq.Status = "revoked"
-		signReq.Reason = 1
-		signReq.RevokedAt = re.RevokeAt
-	}
-	ocspResp, err := a.CfsslHandler.OcspSigner.Sign(*signReq)
-	if err != nil {
-		logger.WithErrorStack(a.Ctx, err).Errorf("OCSP签名错误:%s, sn:%s, aki:%s", err.Error(), strSN, aki)
-		return nil, nil, err
-	}
-	a.Cache.SetDefault(strSN+aki, ocspResp)
-
-	logger.Infof("OCSP签名完成, sn:%s, aki:%s", strSN, aki)
-	return ocspResp, nil, nil
+	//logger.Infof("OCSP签名完成, sn:%s, aki:%s", strSN, aki)
+	//return ocspResp, nil, nil
+	return nil, nil, nil
 }

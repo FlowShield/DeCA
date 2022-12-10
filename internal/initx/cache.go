@@ -4,7 +4,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/cloudslit/deca/pkg/memorycacher"
+	"github.com/flowshield/deca/pkg/memorycacher"
 )
 
 func InitOcspCache() *memorycacher.Cache {

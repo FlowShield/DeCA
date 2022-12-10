@@ -6,10 +6,10 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/cloudslit/deca/internal/config"
-	"github.com/cloudslit/deca/pkg/logger"
-	loggerhook "github.com/cloudslit/deca/pkg/logger/hook"
-	loggerredishook "github.com/cloudslit/deca/pkg/logger/hook/redis"
+	"github.com/flowshield/deca/internal/config"
+	"github.com/flowshield/deca/pkg/logger"
+	loggerhook "github.com/flowshield/deca/pkg/logger/hook"
+	loggerredishook "github.com/flowshield/deca/pkg/logger/hook/redis"
 )
 
 // InitLogger initialize the log module

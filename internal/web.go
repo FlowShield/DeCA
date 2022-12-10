@@ -3,13 +3,13 @@ package internal
 import (
 	"net/http"
 
-	"github.com/cloudslit/cfssl/ocsp"
-	"github.com/cloudslit/deca/internal/api"
-	"github.com/cloudslit/deca/internal/middleware"
+	"github.com/flowshield/cfssl/ocsp"
+	"github.com/flowshield/deca/internal/api"
+	"github.com/flowshield/deca/internal/middleware"
 	"github.com/gin-gonic/gin"
 
-	"github.com/cloudslit/deca/internal/config"
-	"github.com/cloudslit/deca/internal/router"
+	"github.com/flowshield/deca/internal/config"
+	"github.com/flowshield/deca/internal/router"
 )
 
 func InitGinEngine(r router.IRouter) *gin.Engine {

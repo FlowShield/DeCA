@@ -7,11 +7,11 @@ import (
 	"strings"
 	"sync"
 
-	cfssl_config "github.com/cloudslit/cfssl/config"
+	cfssl_config "github.com/flowshield/cfssl/config"
 
 	"github.com/koding/multiconfig"
 
-	"github.com/cloudslit/deca/pkg/util/json"
+	"github.com/flowshield/deca/pkg/util/json"
 )
 
 var (
@@ -45,8 +45,13 @@ func MustLoad(fpaths ...string) error {
 		}
 		m.MustLoad(C)
 	})
+
+	err := ParseConfigByEnv()
+	if err != nil {
+		return err
+	}
 	PrintWithJSON()
-	return ParseConfigByEnv()
+	return nil
 }
 
 func ParseConfigByEnv() error {
@@ -67,6 +72,18 @@ func ParseConfigByEnv() error {
 	if v := os.Getenv("CA_TLS_KEY_FILE"); v != "" {
 		C.TLS.KeyFile = v
 	}
+
+	// Contract
+	if v := os.Getenv("CA_CONTRACT_ADDRESS"); v != "" {
+		C.Contract.Address = v
+	}
+	if v := os.Getenv("CA_CONTRACT_RPC_URL"); v != "" {
+		C.Contract.RpcUrl = v
+	}
+	if v := os.Getenv("CA_CONTRACT_PRIVATE_KEY"); v != "" {
+		C.Contract.PrivateKey = v
+	}
+
 	// OCSP
 	if v := os.Getenv("CA_OCSP_HOST"); v != "" {
 		C.OCSP.Host = v
@@ -104,23 +121,6 @@ func ParseConfigByEnv() error {
 		C.Ipfs.Port = p
 	}
 
-	// CRDT
-	if v := os.Getenv("CA_CRDT_KV_NODE_SERVICE_NAME"); v != "" {
-		C.CrdtKv.NodeServiceName = v
-	}
-	if v := os.Getenv("CA_CRDT_KV_DATA_STORE_PATH"); v != "" {
-		C.CrdtKv.DataStorePath = v
-	}
-	if v := os.Getenv("CA_CRDT_KV_DATA_SYNC_CHANNEL"); v != "" {
-		C.CrdtKv.DataSyncChannel = v
-	}
-	if v := os.Getenv("CA_CRDT_KV_NET_DISCOVERY_CHANNEL"); v != "" {
-		C.CrdtKv.NetDiscoveryChannel = v
-	}
-	if v := os.Getenv("CA_CRDT_KV_NAMESPACE"); v != "" {
-		C.CrdtKv.Namespace = v
-	}
-
 	// Cfssl
 	cfg, err := cfssl_config.LoadFile(C.Cfssl.ConfigFile)
 	if err != nil {
@@ -153,7 +153,7 @@ type Config struct {
 	Storage      Storage
 	Ipfs         Ipfs
 	Web3Storage  Web3Storage
-	CrdtKv       CrdtKv
+	Contract     Contract
 }
 
 func (c *Config) IsDebugMode() bool {
@@ -250,12 +250,12 @@ type Ipfs struct {
 type Web3Storage struct {
 	Token      string
 	EncryptKey string
+	Timeout    int
+	RetryCount int
 }
 
-type CrdtKv struct {
-	NodeServiceName     string // Service Discovery Identification
-	DataStorePath       string // Data storage path
-	DataSyncChannel     string // Pubsub data synchronization channel
-	NetDiscoveryChannel string // Node discovery channel
-	Namespace           string
+type Contract struct {
+	Address    string
+	PrivateKey string
+	RpcUrl     string
 }

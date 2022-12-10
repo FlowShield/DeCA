@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 
-	"github.com/cloudslit/deca/internal/api"
+	"github.com/flowshield/deca/internal/api"
 )
 
 var _ IRouter = (*Router)(nil)
@@ -48,8 +48,10 @@ func (a *Router) RegisterAPI(app *gin.Engine) {
 
 		gCert := v1.Group("certificate")
 		{
-			gCert.GET("gets/:id", a.CertificateAPI.GetS)
-			gCert.GET("getc/:id", a.CertificateAPI.GetC)
+			gCert.GET("get/storage/:id", a.CertificateAPI.GetS)
+			gCert.GET("get/chain/:id", a.CertificateAPI.GetC)
+			gCert.GET("revoke/:id", a.CertificateAPI.Revoke)
+			gCert.GET("verify/:id", a.CertificateAPI.Verify)
 		}
 	} // v1 end
 }

@@ -2,11 +2,17 @@ package web3_storage
 
 import (
 	"context"
+	"fmt"
+	"github.com/flowshield/deca/pkg/errors"
+	"io"
 	"io/fs"
 	"io/ioutil"
+	"log"
+	"net/http"
 	"os"
+	"time"
 
-	"github.com/cloudslit/deca/internal/config"
+	"github.com/flowshield/deca/internal/config"
 
 	"github.com/ipfs/go-cid"
 	"github.com/web3-storage/go-w3s-client"
@@ -14,8 +20,11 @@ import (
 )
 
 type Web3Storage struct {
-	db  w3s.Client
-	key []byte
+	db         w3s.Client
+	httpClient *http.Client
+	timeout    time.Duration
+	filename   string
+	key        []byte
 }
 
 func New() (*Web3Storage, error) {
@@ -25,13 +34,18 @@ func New() (*Web3Storage, error) {
 		return nil, err
 	}
 	return &Web3Storage{
-		db:  db,
+		db:       db,
+		timeout:  time.Duration(cfg.Timeout) * time.Second,
+		filename: "filename",
+		httpClient: &http.Client{
+			Timeout: time.Duration(cfg.Timeout) * time.Second,
+		},
 		key: []byte(cfg.EncryptKey),
 	}, nil
 }
 
 func (a *Web3Storage) Put(ctx context.Context, data []byte) (cid string, err error) {
-	file, err := a.dataToFile(data)
+	file, err := a.dataToFile(data, a.filename, a.key)
 	defer os.Remove(file.Name())
 	if err != nil {
 		return
@@ -43,7 +57,44 @@ func (a *Web3Storage) Put(ctx context.Context, data []byte) (cid string, err err
 	return cidObj.String(), nil
 }
 
-func (a *Web3Storage) Get(ctx context.Context, cidStr string) (data []byte, err error) {
+func (a *Web3Storage) Get(ctx context.Context, cidStr string) ([]byte, error) {
+	var result []byte
+	var err error
+	result, err = a.GetByW3sLink(cidStr, a.filename, a.key)
+	if err != nil {
+		log.Println("Failed to obtain from w3s link, err: ", err.Error())
+		ctx, cancel := context.WithTimeout(ctx, a.timeout*time.Second)
+		defer cancel()
+		result, err = a.GetByW3sClient(ctx, cidStr, a.key)
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+	}
+	return result, nil
+}
+
+func (a *Web3Storage) GetByW3sLink(cid string, filename string, key []byte) ([]byte, error) {
+	url := fmt.Sprintf("https://%s.ipfs.w3s.link/%s", cid, filename)
+	resp, err := a.httpClient.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("request error, url:%s, code:%d, msg:%s", url, resp.StatusCode, resp.Status)
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	data, err := goEncrypt.DesCbcDecrypt(body, key[:], nil) // 解密得到密文,可以自己传入初始化向量,如果不传就使用默认的初始化向量,8字节
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (a *Web3Storage) GetByW3sClient(ctx context.Context, cidStr string, key []byte) (data []byte, err error) {
 	cidObj, err := cid.Decode(cidStr)
 	if err != nil {
 		return nil, err
@@ -72,7 +123,7 @@ func (a *Web3Storage) Get(ctx context.Context, cidStr string) (data []byte, err 
 	if err != nil {
 		return nil, err
 	}
-	data, err = goEncrypt.DesCbcDecrypt(data, a.key, nil) //解密得到密文,可以自己传入初始化向量,如果不传就使用默认的初始化向量,8字节
+	data, err = goEncrypt.DesCbcDecrypt(data, key[:], nil) // 解密得到密文,可以自己传入初始化向量,如果不传就使用默认的初始化向量,8字节
 	if err != nil {
 		return nil, err
 	}
@@ -83,17 +134,17 @@ func (a *Web3Storage) Close() error {
 	return nil
 }
 
-func (a *Web3Storage) dataToFile(data []byte) (file *os.File, err error) {
-	file, err = os.CreateTemp("", "data")
+func (a *Web3Storage) dataToFile(data []byte, filename string, key []byte) (file *os.File, err error) {
+	file, err = os.Create(filename)
 	if err != nil {
 		return
 	}
 	// 对数据进行加密
-	cryptText, err := goEncrypt.DesCbcEncrypt(data, a.key, nil)
+	cryptText, err := goEncrypt.DesCbcEncrypt(data, key[:], nil)
 	if err != nil {
 		return
 	}
-	err = os.WriteFile(file.Name(), cryptText, 0644)
+	err = os.WriteFile(file.Name(), cryptText, 0o644)
 	if err != nil {
 		return
 	}

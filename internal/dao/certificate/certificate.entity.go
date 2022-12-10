@@ -3,8 +3,8 @@ package certificate
 import (
 	"time"
 
-	"github.com/cloudslit/deca/internal/schema"
-	"github.com/cloudslit/deca/pkg/util/structure"
+	"github.com/flowshield/deca/internal/schema"
+	"github.com/flowshield/deca/pkg/util/structure"
 )
 
 type SchemaCertificate schema.Certificate

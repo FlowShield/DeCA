@@ -1,6 +1,6 @@
 .PHONY: all build clean
 
-PROG=bin/ca
+PROG=bin/deca
 SRCS=cmd/main.go
 
 # git commit hash

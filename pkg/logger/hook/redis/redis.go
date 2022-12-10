@@ -3,7 +3,7 @@ package redis
 import (
 	"fmt"
 
-	"github.com/cloudslit/deca/pkg/util/json"
+	"github.com/flowshield/deca/pkg/util/json"
 
 	"github.com/go-redis/redis"
 	"github.com/sirupsen/logrus"

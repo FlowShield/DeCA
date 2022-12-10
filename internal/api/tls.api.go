@@ -1,11 +1,11 @@
 package api
 
 import (
-	"github.com/cloudslit/cfssl/api"
-	"github.com/cloudslit/cfssl/auth"
-	"github.com/cloudslit/deca/internal/ginx"
-	"github.com/cloudslit/deca/internal/schema"
-	"github.com/cloudslit/deca/internal/service"
+	"github.com/flowshield/cfssl/api"
+	"github.com/flowshield/cfssl/auth"
+	"github.com/flowshield/deca/internal/ginx"
+	"github.com/flowshield/deca/internal/schema"
+	"github.com/flowshield/deca/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 )

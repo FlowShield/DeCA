@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
+	"github.com/flowshield/deca/pkg/contract"
 	"os"
 
-	"github.com/cloudslit/deca/internal"
-	"github.com/cloudslit/deca/pkg/logger"
+	"github.com/flowshield/deca/internal"
+	"github.com/flowshield/deca/pkg/logger"
 	"github.com/urfave/cli/v2"
 )
 
@@ -20,6 +21,7 @@ func main() {
 	app.Usage = "CA PKI"
 	app.Commands = []*cli.Command{
 		newTlsCmd(ctx),
+		newDeployContractCmd(ctx),
 		newOcspCmd(ctx),
 	}
 	err := app.Run(os.Args)
@@ -46,6 +48,34 @@ func newTlsCmd(ctx context.Context) *cli.Command {
 				internal.SetVersion(VERSION),
 				internal.SetAppType(c.Command.Name),
 			)
+		},
+	}
+}
+
+// newDeployContractCmd 部署合约
+func newDeployContractCmd(ctx context.Context) *cli.Command {
+	return &cli.Command{
+		Name:  "deploy",
+		Usage: "deploy contract",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "url",
+				Aliases:  []string{"u"},
+				Usage:    "rpc url",
+				Required: true,
+			},
+			&cli.StringFlag{
+				Name:     "key",
+				Aliases:  []string{"k"},
+				Usage:    "private key",
+				Required: true,
+			},
+		},
+		Action: func(c *cli.Context) error {
+			return contract.DeployContract(ctx, &contract.Config{
+				PrivateKey: c.String("key"),
+				RpcUrl:     c.String("url"),
+			})
 		},
 	}
 }

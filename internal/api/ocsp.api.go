@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 
-	"github.com/cloudslit/deca/internal/service"
+	"github.com/flowshield/deca/internal/service"
 	"github.com/google/wire"
 	stdocsp "golang.org/x/crypto/ocsp"
 )

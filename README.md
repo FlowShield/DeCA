@@ -28,7 +28,7 @@ The certificate is stored in decentralize storage by using the characteristics o
 ```
 $ go get github.com/FlowShield/deca
 $ make
-$ bin/ca tls -c configs/config.toml
+$ bin/deca tls -c configs/config.toml
 ```
 
 ### SDK Installation
@@ -40,3 +40,12 @@ The classic usage of CA SDK is that the client and the server use the certificat
 
 See：[Demo](https://github.com/FlowShield/casdk/tree/main/examples)
 
+## Fevm Practice
+Deploy the contract in wallabynet
+```
+$ bin/deca deploy -u https://wallaby.node.glif.io/rpc/v0 -k <private key>
+```
+Start CA Service
+```
+$ bin/deca tls -c configs/config.toml
+```

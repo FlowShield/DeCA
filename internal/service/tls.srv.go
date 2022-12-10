@@ -5,18 +5,17 @@ import (
 	"encoding/hex"
 	"time"
 
-	"github.com/cloudslit/cfssl/auth"
-	cfssl_config "github.com/cloudslit/cfssl/config"
-	"github.com/cloudslit/cfssl/helpers"
-	"github.com/cloudslit/cfssl/signer"
-	"github.com/cloudslit/deca/internal/config"
-	"github.com/cloudslit/deca/internal/dao"
-	"github.com/cloudslit/deca/internal/initx"
-	"github.com/cloudslit/deca/internal/schema"
-	"github.com/cloudslit/deca/pkg/attrmgr"
-	"github.com/cloudslit/deca/pkg/errors"
-	"github.com/cloudslit/deca/pkg/logger"
-	"github.com/cloudslit/deca/pkg/util/json"
+	"github.com/flowshield/cfssl/auth"
+	cfssl_config "github.com/flowshield/cfssl/config"
+	"github.com/flowshield/cfssl/helpers"
+	"github.com/flowshield/cfssl/signer"
+	"github.com/flowshield/deca/internal/dao"
+	"github.com/flowshield/deca/internal/initx"
+	"github.com/flowshield/deca/internal/schema"
+	"github.com/flowshield/deca/pkg/attrmgr"
+	"github.com/flowshield/deca/pkg/errors"
+	"github.com/flowshield/deca/pkg/logger"
+	"github.com/flowshield/deca/pkg/util/json"
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 )
@@ -34,26 +33,26 @@ func (a *TlsSrv) Info(c *gin.Context) {
 
 func (a *TlsSrv) Revoke(ctx context.Context, params schema.RevokeParams) error {
 	// 数据库查询
-	_, err := a.CertificateRepo.GetC(ctx, schema.SnCidKey(params.Serial))
-	if err != nil {
-		return err
-	}
-	if params.Profile == "" {
-		return errors.New("profile 未指定")
-	}
-	if authKey, ok := config.C.Cfssl.Config.AuthKeys[params.Profile]; ok {
-		if authKey.Key != params.AuthKey {
-			return errors.New("非法操作")
-		}
-	}
-	data := schema.CertificateRevoke{
-		SerialNumber: params.Serial,
-		RevokeAt:     time.Now(),
-	}
-	err = a.CertificateRepo.PutC(ctx, schema.SnRevokeKey(params.Serial), data.String())
-	if err != nil {
-		return err
-	}
+	//_, err := a.CertificateRepo.GetC(ctx, schema.SnCidKey(params.Serial))
+	//if err != nil {
+	//	return err
+	//}
+	//if params.Profile == "" {
+	//	return errors.New("profile 未指定")
+	//}
+	//if authKey, ok := config.C.Cfssl.Config.AuthKeys[params.Profile]; ok {
+	//	if authKey.Key != params.AuthKey {
+	//		return errors.New("非法操作")
+	//	}
+	//}
+	//data := schema.CertificateRevoke{
+	//	SerialNumber: params.Serial,
+	//	RevokeAt:     time.Now(),
+	//}
+	//err = a.CertificateRepo.PutC(ctx, schema.SnRevokeKey(params.Serial), data.String())
+	//if err != nil {
+	//	return err
+	//}
 	return nil
 }
 
@@ -133,10 +132,17 @@ func (a *TlsSrv) saveCertificate(ctx context.Context, certPem []byte, metaData m
 	if err != nil {
 		return nil, err
 	}
-	err = a.CertificateRepo.PutC(ctx, schema.SnCidKey(sn), idResult.ID)
+	tran, err := a.CertificateRepo.PutBlockChain(
+		ctx,
+		certificate.SerialNumber,
+		hex.EncodeToString(cert.SubjectKeyId),
+		hex.EncodeToString(cert.AuthorityKeyId),
+		idResult.ID,
+		certificate.Hash())
 	if err != nil {
 		return nil, err
 	}
+	logger.Infof("save to chain:%s", tran.Hash())
 	return schema.NewIDResult(idResult.ID), nil
 }
 

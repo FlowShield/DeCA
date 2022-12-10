@@ -8,11 +8,11 @@ package internal
 
 import (
 	"context"
-	"github.com/cloudslit/deca/internal/api"
-	"github.com/cloudslit/deca/internal/dao/certificate"
-	"github.com/cloudslit/deca/internal/initx"
-	"github.com/cloudslit/deca/internal/router"
-	"github.com/cloudslit/deca/internal/service"
+	"github.com/flowshield/deca/internal/api"
+	"github.com/flowshield/deca/internal/dao/certificate"
+	"github.com/flowshield/deca/internal/initx"
+	"github.com/flowshield/deca/internal/router"
+	"github.com/flowshield/deca/internal/service"
 )
 
 // Injectors from wire.go:
@@ -22,14 +22,14 @@ func BuildInjector(ctx context.Context) (*Injector, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	crdtKeyValueDB, cleanup2, err := initx.InitCrdtKv(ctx)
+	ethClient, cleanup2, err := initx.InitEthClient(ctx)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
 	certificateRepo := &certificate.CertificateRepo{
-		DB:   execCloser,
-		Crdt: crdtKeyValueDB,
+		DB:  execCloser,
+		Eth: ethClient,
 	}
 	cfsslHandler, err := initx.InitCfssl()
 	if err != nil {
@@ -70,6 +70,7 @@ func BuildInjector(ctx context.Context) (*Injector, func(), error) {
 	injector := &Injector{
 		Engine:     engine,
 		OcspEngine: serveMux,
+		Router:     routerRouter,
 	}
 	return injector, func() {
 		cleanup2()

@@ -2,20 +2,21 @@ package certificate
 
 import (
 	"context"
-
-	"github.com/IceFireDB/icefiredb-crdt-kv/kv"
-	"github.com/cloudslit/deca/internal/schema"
-	"github.com/cloudslit/deca/pkg/errors"
-	"github.com/cloudslit/deca/pkg/storage"
-	"github.com/cloudslit/deca/pkg/util/json"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/flowshield/deca/internal/schema"
+	"github.com/flowshield/deca/pkg/contract"
+	"github.com/flowshield/deca/pkg/errors"
+	"github.com/flowshield/deca/pkg/storage"
+	"github.com/flowshield/deca/pkg/util/json"
 	"github.com/google/wire"
 )
 
-var CertificateSet = wire.NewSet(wire.Struct(new(CertificateRepo), "*"))
+var CertificateSet = wire.NewSet(wire.Struct(new(CertificateRepo), "DB", "Eth"))
 
 type CertificateRepo struct {
-	DB   storage.ExecCloser
-	Crdt *kv.CRDTKeyValueDB
+	DB  storage.ExecCloser
+	Eth *contract.EthClient
 }
 
 func (a *CertificateRepo) GetS(ctx context.Context, id string) (*schema.Certificate, error) {
@@ -55,14 +56,34 @@ retry:
 	return schema.NewIDResult(id), nil
 }
 
-func (a *CertificateRepo) GetC(ctx context.Context, key string) ([]byte, error) {
-	result, err := a.Crdt.Get(ctx, []byte(key))
+func (a *CertificateRepo) PutBlockChain(ctx context.Context, sn, ski, aki, cid, cidDocHash string) (*types.Transaction, error) {
+	v, err := a.Eth.Instance.Save(a.Eth.Auth, sn, ski, aki, cid, cidDocHash)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
-	return result, err
+	return v, err
 }
 
-func (a *CertificateRepo) PutC(ctx context.Context, key string, value string) error {
-	return a.Crdt.Put(ctx, []byte(key), []byte(value))
+func (a *CertificateRepo) GetBlockChain(ctx context.Context, sn string) (*contract.CertificateCert, error) {
+	v, err := a.Eth.Instance.Get(&bind.CallOpts{Pending: true, From: a.Eth.Auth.From}, sn)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return &v, err
+}
+
+func (a *CertificateRepo) Verify(ctx context.Context, sn string) (*contract.CertificateCert, error) {
+	v, err := a.Eth.Instance.Verify(&bind.CallOpts{Pending: true, From: a.Eth.Auth.From}, sn)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return &v, err
+}
+
+func (a *CertificateRepo) Revoke(ctx context.Context, sn string) (*types.Transaction, error) {
+	v, err := a.Eth.Instance.Revoke(a.Eth.Auth, sn)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return v, err
 }
