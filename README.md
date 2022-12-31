@@ -26,12 +26,13 @@ The certificate is stored in decentralize storage by using the characteristics o
 
 ## EVM Practice
 ### Deploy contract
+Deploy contracts through blockchain RPC addresses and account keys
 ```
 $ bin/deca deploy -u https://goerli.infura.io/v3/81fec17192394537a0408c47ef5ec0b8 -k <private key>
 ```
 ### Configuration
-Modify the contract information in the configuration file
-```
+Obtain the deployed contract address, modify the contract information in the configuration file, and other necessary information
+```toml
 # Contract Configuration
 [Contract]
 # Contract address
@@ -46,6 +47,7 @@ PrivateKey = "<private key>"
 ```
 $ bin/deca tls -c configs/config.toml
 ```
+
 ### DPKI SDK Demo
 Support decentralized certificate application, certificate online status query, certificate chain verification
 
