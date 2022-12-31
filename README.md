@@ -24,28 +24,29 @@ The certificate is stored in decentralize storage by using the characteristics o
 
 ![image](https://user-images.githubusercontent.com/52234994/192089294-d5891f90-16ac-497d-9efe-a09eb38b0ced.png)
 
-# Get Start
+## EVM Practice
+### Deploy contract
 ```
-$ go get github.com/FlowShield/deca
-$ make
-$ bin/deca tls -c configs/config.toml
+$ bin/deca deploy -u https://goerli.infura.io/v3/81fec17192394537a0408c47ef5ec0b8 -k <private key>
+```
+### Configuration
+Modify the contract information in the configuration file
+```
+# Contract Configuration
+[Contract]
+# Contract address
+Address = "0x7396fbfa3192325162ca39da7ab7b43bd587750a"
+# RPC Address
+RpcUrl = "https://goerli.infura.io/v3/81fec17192394537a0408c47ef5ec0b8"
+# Account private key - used for signing requests
+PrivateKey = "<private key>"
 ```
 
-### SDK Installation
-```
-$ go get github.com/FlowShield/deca
-```
-
-The classic usage of CA SDK is that the client and the server use the certificate issued by CA Center for encrypted communication. The following is the usage of sdk between client and server.
-
-See：[Demo](https://github.com/FlowShield/casdk/tree/main/examples)
-
-## Fevm Practice
-Deploy the contract in wallabynet
-```
-$ bin/deca deploy -u https://wallaby.node.glif.io/rpc/v0 -k <private key>
-```
-Start CA Service
+### Start CA Service
 ```
 $ bin/deca tls -c configs/config.toml
 ```
+### DPKI SDK Demo
+Support decentralized certificate application, certificate online status query, certificate chain verification
+
+[Demo](https://github.com/FlowShield/casdk/tree/dpki/examples/vm-mtls)
