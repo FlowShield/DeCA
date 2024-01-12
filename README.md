@@ -22,7 +22,11 @@ DeCA proposed a decentralized PKI framework named DeCA by using IPFS and FVM tec
 
 The certificate is stored in decentralize storage by using the characteristics of IPFS and FVM, and cannot be tampered with, thus effectively preventing the third party from attacking.
 
-![image](https://user-images.githubusercontent.com/52234994/192089294-d5891f90-16ac-497d-9efe-a09eb38b0ced.png)
+<p align="center">
+<img src="https://github.com/FlowShield/DeCA/assets/34047788/5d843aad-6d2f-4c64-a08d-2a17b07bd82e" 
+    width="90%" border="0" alt="CA">
+</p>
+
 
 # Get Start
 ```
